@@ -475,3 +475,82 @@ wsl --install
 - 下载并安装 Ubuntu Linux 发行版（可能需要重新启动）
 
 在此安装过程中，你将需要重启计算机。
+
+# WSL中使用Codex CLI
+
+## 进入Ubuntu终端
+
+下载 Codex 安装脚本，然后交给 sh 执行。
+
+```bash
+curl -fsSL https://chatgpt.com/codex/install.sh | sh
+```
+
+ - curl：从网址下载内容。
+  - -f：服务器返回错误时，让命令失败。
+  - -s：隐藏下载进度。
+  - -S：出错时仍显示错误信息。
+  - -L：网址发生重定向时，跟着跳转。
+  - |：管道，把左边下载的脚本内容传给右边。
+  - sh：执行收到的脚本。
+
+安装后重新打开 WSL 终端，检查：
+
+```bash
+codex --version
+```
+
+如果提示没有 curl，Ubuntu 中先执行：
+
+```bash
+codex login
+```
+
+  按提示在浏览器中完成 ChatGPT 登录，然后检查：
+
+```bash
+codex login status
+```
+
+ Windows 上的项目也可以访问，例如 D:\projects\my-app 对应：
+
+```bash
+cd /mnt/d/projects/my-app
+codex
+```
+
+  不过，长期开发建议把项目放在 WSL 的 ~/code/ 下，文件读写通常更快，也能减少权限和符号链接问题。
+
+```bash
+mkdir -p ~/code && cd ~/code
+git clone https://github.com/your/repo.git
+cd repo
+```
+
+## bubblewrap
+
+提示：
+
+```bash
+⚠ Codex could not find bubblewrap on PATH. Install bubblewrap with your OS package manager. See the sandbox prerequisites: https://developers.openai.com/codex/concepts/sandboxing#prerequisites. Codex will use the bundled bubblewrap in the meantime.
+```
+
+这是提示：**系统里没找到 `bubblewrap`，Codex 暂时使用自带的版本。** 它是用于 Linux 沙箱隔离的工具，**这条提示本身不代表 Codex 无法使用**。
+
+如果你用的是 **Ubuntu / WSL Ubuntu**，在终端执行：
+
+```bash
+sudo apt update
+sudo apt install bubblewrap
+```
+
+* apt 是 Ubuntu、Debian 等 Linux 系统的软件包管理工具，全称是 Advanced Package Tool，用来安装、更新和卸载软件。
+
+- update：刷新软件列表，获取软件源中有哪些包、最新版本是什么。
+
+安装后退出并重新启动 Codex 即可。也可以先检查是否安装成功：
+
+```bash
+bwrap --version
+```
+
